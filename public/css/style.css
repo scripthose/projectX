@@ -1,0 +1,75 @@
+body {
+  padding: 0;
+  margin: 0;
+  background: whitesmoke;
+}
+
+body::-webkit-scrollbar-thumb {
+  transition: all ease 400ms;
+  background: #2e2f30;
+}
+body::-webkit-scrollbar-thumb:hover {
+  background: rgb(15, 19, 19);
+}
+
+body::-webkit-scrollbar {
+  width: 7px;
+  background: #22232425;
+}
+
+/* here is the style of the navbar starts all over */
+.navbar {
+  width: 100%;
+  height: 55px;
+  background: #2e2f30;
+  position: fixed;
+  z-index: 100;
+}
+.navbar .element-container span {
+  font-size: 25px;
+  line-height: 50px;
+  position: relative;
+  left: 6.5%;
+  color: aliceblue;
+}
+
+/* here is the style of the side bar starts  */
+.bar-wrapper {
+  position: fixed;
+  width: 20%;
+  top: 8%;
+  z-index: 100;
+}
+.side-bar {
+  position: relative;
+  width: 100%;
+  height: auto;
+  left: 4%;
+  margin-top: 1%;
+  padding: 0;
+}
+
+.side-bar .element-container {
+  height: auto;
+  list-style: none;
+  padding: 0;
+}
+.side-bar .element-container a {
+  text-decoration: none;
+}
+.side-bar .element-container li {
+  position: relative;
+  width: auto;
+  line-height: 60px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.226);
+  font-size: 18px;
+  color: rgb(255, 255, 255);
+  background: #2e2f30;
+  transition: all ease 400ms;
+  padding-left: 30px;
+}
+
+.side-bar .element-container li:hover {
+  background: #141414;
+  transform: scale(0.95);
+}
