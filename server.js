@@ -1,47 +1,26 @@
 const express = require("express");
-const app = express();
-const path = require("path");
-
 const bodyParser = require("body-parser");
 
-app.use(express.static(path.join(__dirname, "public")));
+const config = require('./config');
+const IndexRoute = require('./routes');
 
-app.set(bodyParser.json);
-app.set(bodyParser.urlencoded({ extended: true }));
+const app = express();
 
+// for serving static files
+app.use(express.static(config.PUBLIC_URL));
+
+// use bodyParser to parse json and request body
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// view engine setup...
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "public"));
+app.set("views", config.PUBLIC_URL);
 
-const port = process.env.PORT || 2254;
-const host = process.env.host || "127.0.0.1";
+// Routes
+app.use(IndexRoute);
 
-app.listen(port, callback =>
-  console.log("\x1b[36m", `Open http://${host}:${port}`)
+// start listening...
+app.listen(config.PORT, () =>
+  console.log("\x1b[36m", `Open ${config.BASE_URL}`)
 );
-
-(() => {
-  app.get("/", (req, res) => {
-    res.render("index");
-  });
-  app.get("/product", (req, res) => {
-    res.render("product");
-  });
-  app.get("/store", (req, res) => {
-    res.render("store");
-  });
-  app.get("/supplier", (req, res) => {
-    res.render("supplier");
-  });
-  app.get("/store-keeper", (req, res) => {
-    res.render("store-keeper");
-  });
-  app.get("/price", (req, res) => {
-    res.render("price");
-  });
-  app.get("/report", (req, res) => {
-    res.render("report");
-  });
-  app.get("/docs", (req, res) => {
-    res.render("document");
-  });
-})();
