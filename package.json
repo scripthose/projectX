@@ -15,7 +15,8 @@
     "express": "^4.16.4",
     "http-errors": "^1.7.1",
     "https": "^1.0.0",
-    "mongoose": "^5.4.12"
+    "mongoose": "^5.4.12",
+    "mongoose-timestamp": "^0.6.0"
   },
   "devDependencies": {
     "morgan": "^1.9.1"

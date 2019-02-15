@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 const timestamp = require('mongoose-timestamp');
 
+const {
+    productPreSaveHook,
+    productPreRemoveHook
+} = require('./Producthooks');
+
 const Schema = mongoose.Schema;
 
 //Employee Schem
-
 const EmployeeSchema = new Schema({
     name: {
         type: String,
@@ -26,6 +30,7 @@ const EmployeeSchema = new Schema({
         required: true
     },
     catchTime: {
+        type: Date,
         default: Date.now
     }
 });
@@ -82,11 +87,7 @@ const ProductSchema = new Schema({
         type: Number,
         required: true
     },
-    name: {
-        type: String,
-        required: true
-    },
-    stor_id: {
+    storId: {
         type: Schema.Types.ObjectId,
         ref: 'storage',
         required: true
@@ -102,19 +103,22 @@ const ExporterSchema = new Schema({
         type: Number,
         required: true
     },
-    Prod_id: {
+    products: [{
         type: Schema.Types.ObjectId,
         ref: 'product',
         required: true
-    }
+    }]
 });
 
 EmployeeSchema.plugin(timestamp);
 
 const employee = mongoose.model('employee', EmployeeSchema);
 const storage = mongoose.model('storage', StorageSchema);
-const product = mongoose.model('product', ProductSchema);
 const exporter = mongoose.model('exporter', ExporterSchema);
+
+productPreSaveHook({storage, exporter}, ProductSchema);
+productPreRemoveHook({storage, exporter}, ProductSchema);
+const product = mongoose.model('product', ProductSchema);
 
 
 // exporting the models outside of the
@@ -123,4 +127,11 @@ module.exports = {
     storage,
     product,
     exporter
-}
+};
+
+module.exports.schemas = {
+    EmployeeSchema,
+    ExporterSchema,
+    StorageSchema,
+    ProductSchema,
+};

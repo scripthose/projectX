@@ -43,7 +43,8 @@ app.use(function (err, req, res, next) {
 });
 
 mongoose.connect(config.DB_URL, {useNewUrlParser: true}, () => {
-  console.log('connected to the Database')
+  console.log('connected to the Database');
+  require('./models/model');
 });
 
 // start listening...
