@@ -13,6 +13,11 @@
     "body-parser": "^1.18.3",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
-    "https": "^1.0.0"
+    "http-errors": "^1.7.1",
+    "https": "^1.0.0",
+    "mongoose": "^5.4.12"
+  },
+  "devDependencies": {
+    "morgan": "^1.9.1"
   }
 }
