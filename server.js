@@ -1,5 +1,6 @@
 const logger = require('morgan');
 const express = require("express");
+const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const createError = require('http-errors');
 
@@ -41,6 +42,9 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
+mongoose.connect(config.DB_URL, {useNewUrlParser: true}, () => {
+  console.log('connected to the Database')
+});
 
 // start listening...
 app.listen(config.PORT, () =>
