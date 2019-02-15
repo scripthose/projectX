@@ -1,10 +1,12 @@
 function productPreSaveHook(models, ProductSchema) {
   ProductSchema.pre('save', async function() {
     let prod = this;
-    await Promise.all([
-      syncProductAddition(models.exporter, prod, prod.exporter).catch(console.error),
-      syncProductAddition(models.storage, prod, prod.storId).catch(console.error),
-    ]);
+    if (prod.isNew) {
+      await Promise.all([
+        syncProductAddition(models.exporter, prod, prod.exporter).catch(console.error),
+        syncProductAddition(models.storage, prod, prod.storId).catch(console.error),
+      ]);
+    }
   });
 }
 
