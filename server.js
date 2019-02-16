@@ -6,6 +6,7 @@ const createError = require('http-errors');
 
 const config = require('./config');
 const IndexRoute = require('./routes');
+const APIRouter = require('./routes/api');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.set("views", config.PUBLIC_URL);
 
 // Routes
 app.use(IndexRoute);
+app.use('/api', APIRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -39,7 +41,11 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  if (req.url.includes('/api')) {
+    res.json(err);
+  } else {
+    res.render('error');
+  }
 });
 
 mongoose.connect(config.DB_URL, {useNewUrlParser: true}, () => {

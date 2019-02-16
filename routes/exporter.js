@@ -1,4 +1,4 @@
-const errors = require('restify-errors');
+const errors = require('http-errors');
 const rjwt = require('restify-jwt-community');
 const Store = require('../models/model');
 const config = require('../config');
@@ -7,87 +7,73 @@ const config = require('../config');
 module.exports = server => {
 
     //get exporter
-    server.get('/exporter', async (req ,res, next) =>{
+    server.get('/exporter', async (req ,res, ) =>{
         try{
             const exporters = await Store.exporter.find({});
             res.send(exporters);
-        next();
         }
         catch (err) {
-            return next(new errors.InvalidContentError(err))
+            return (new errors(400, err))
         }
     });
 
     //get a single exporter
-    server.get('/exporter/:id', async (req ,res, next) =>{
+    server.get('/exporter/:id', async (req ,res, ) =>{
         try{
             const exporter = await Store.exporter.findById(req.params.id);
             res.send(exporter);
-        next();
         }
         catch (err) {
-            return next(new errors.ResourceNotFoundError(
-                `There is no product with the id of ${req.param.id}`
-            )
-            );
+            return (new errors(404,`There is no product with the id of ${req.param.id}`));
         }
     });
 
     //Add exporter
-    server.post('/exporter', rjwt({secret: config.JWT_SECRET}), async (req ,res ,next) => {
+    server.post('/exporter', rjwt({secret: config.JWT_SECRET}), async (req ,res ,) => {
         //check for JSON 
         if(!req.is('application/json')) {
-            return next( new errors.InvalidContentError("Expect 'application/json'"));
+            return ( new errors(400, "Expect 'application/json'"));
         }
 
-const {name, tel, products} = req.body;
-const exporter = new Store.exporter({
- name,
- tel,
- products
-});
+        const {name, tel, products} = req.body;
+        const exporter = new Store.exporter({
+            name,
+            tel,
+            products
+        });
 
-try{
+        try{
 
-    const newExporter = await exporter.save();
-    res.send(201);
-    next();
-} catch (err){
-    return next(new errors.InternalError(err.message));
-}
+            const newExporter = await exporter.save();
+            res.send(201);
+        } catch (err){
+            return (new errors(500, err.message));
+        }
     });
 
     //update exporter
-    server.put('/exporter/:id',rjwt({secret: config.JWT_SECRET}), async (req ,res ,next) => {
+    server.put('/exporter/:id',rjwt({secret: config.JWT_SECRET}), async (req ,res ,) => {
         //check for JSON 
         if(!req.is('application/json')) {
-            return next( new errors.InvalidContentError("Expect 'application/json'"));
+            return ( new errors(400, "Expect 'application/json'"));
         }
-try{
 
-    const exporter = await Store.exporter.findOneAndUpdate({ _id: req.params.id}, 
-        req.body);
-    res.send(200);
-    next();
-} catch (err){
-    return next(new errors.ResourceNotFoundError(
-        `There is no exporter with the id of ${req.params.id}`
-    )
-        );
-}
+        try{
+            const exporter = await Store.exporter.findOneAndUpdate({ _id: req.params.id}, 
+                req.body);
+            res.send(200);
+        } catch (err){
+            return (new errors(404, `There is no exporter with the id of ${req.params.id}`));
+        }
     });
 
     //delete exporter
-    server.del('/exporter/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, next) => {
+    server.delete('/exporter/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, ) => {
         try{
             const exporter = await Store.exporter.findOneAndRemove({_id: req.params.id});
             res.send(204);
-            next();
         }catch(err){
-            return next(new errors.ResourceNotFoundError(
-                `There is no exporter with the id of ${req.params.id}`
-             )
-                );
+            return (new errors(404, `There is no exporter with the id of ${req.params.id}`));
         }
     });
 };

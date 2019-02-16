@@ -11,10 +11,9 @@ module.exports = server => {
         try{
             const products = await Store.product.find({});
             res.send(products);
-        next();
-        }
-        catch (err) {
-            return next(new errors.InvalidContentError(err))
+            next();
+        } catch (err) {
+            return next(new errors(400, err))
         }
     });
 
@@ -23,10 +22,9 @@ module.exports = server => {
         try{
             const product = await Store.product.findById(req.params.id);
             res.send(product);
-        next();
-        }
-        catch (err) {
-            return next(new errors.ResourceNotFoundError(
+          next();
+        } catch (err) {
+            return next(new errors(404,
                 `There is no product with the id of ${req.param.id}`
             )
             );
@@ -37,57 +35,57 @@ module.exports = server => {
     server.post('/product', rjwt({secret: config.JWT_SECRET}), async (req ,res ,next) => {
         //check for JSON 
         if(!req.is('application/json')) {
-            return next( new errors.InvalidContentError("Expect 'application/json'"));
+            return next( new errors(400, "Expect 'application/json'"));
         }
 
-const {name, productionDate, expirationDate, quentity, type, price} = req.body;
-const product = new Store.product({
- name,
- productionDate,
- expirationDate,
- quentity,
- type,
- price
-});
+        const {name, productionDate, expirationDate, quentity, type, price} = req.body;
+        const product = new Store.product({
+            name,
+            productionDate,
+            expirationDate,
+            quentity,
+            type,
+            price
+        });
 
-try{
+        try{
 
-    const newProdcut = await product.save();
-    res.send(201);
-    next();
-} catch (err){
-    return next(new errors.InternalError(err.message));
-}
+            const newProdcut = await product.save();
+            res.send(201);
+            next();
+        } catch (err){
+            return next(new errors(500, err.message));
+        }
     });
 
     //update product
     server.put('/product/:id',rjwt({secret: config.JWT_SECRET}), async (req ,res ,next) => {
         //check for JSON 
         if(!req.is('application/json')) {
-            return next( new errors.InvalidContentError("Expect 'application/json'"));
+            return next( new errors(400, "Expect 'application/json'"));
         }
-try{
+        try{
 
-    const product = await Store.product.findOneAndUpdate({ _id: req.params.id}, 
-        req.body);
-    res.send(200);
-    next();
-} catch (err){
-    return next(new errors.ResourceNotFoundError(
-        `There is no Product with the id of ${req.params.id}`
-    )
-        );
-}
+            const product = await Store.product.findOneAndUpdate({ _id: req.params.id}, 
+                req.body);
+            res.send(200);
+            next();
+        } catch (err){
+            return next(new errors(404, 
+                `There is no Product with the id of ${req.params.id}`
+            )
+                );
+        }
     });
 
     //delete customer
-    server.del('/product/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, next) => {
+    server.delete('/product/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, next) => {
         try{
             const customer = await Store.product.findOneAndRemove({_id: req.params.id});
             res.send(204);
             next();
         }catch(err){
-            return next(new errors.ResourceNotFoundError(
+            return next(new errors(404, 
                 `There is no customer with the id of ${req.params.id}`
              )
                 );

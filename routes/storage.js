@@ -14,7 +14,7 @@ module.exports = server => {
         next();
         }
         catch (err) {
-            return next(new errors.InvalidContentError(err))
+            return next(new errors(400, err))
         }
     });
 
@@ -26,10 +26,7 @@ module.exports = server => {
         next();
         }
         catch (err) {
-            return next(new errors.ResourceNotFoundError(
-                `There is no storage with the id of ${req.param.id}`
-            )
-            );
+            return next(new errors(404,`There is no storage with the id of ${req.param.id}`));
         }
     });
 
@@ -37,32 +34,32 @@ module.exports = server => {
     server.post('/storage', rjwt({secret: config.JWT_SECRET}), async (req ,res ,next) => {
         //check for JSON 
         if(!req.is('application/json')) {
-            return next( new errors.InvalidContentError("Expect 'application/json'"));
+            return next( new errors(400, "Expect 'application/json'"));
         }
 
-const {location, capacity, storageManger, products} = req.body;
-const storage = new Store.storage({
- location,
- capacity,
- storageManger,
- products
-});
+        const {location, capacity, storageManger, products} = req.body;
+        const storage = new Store.storage({
+            location,
+            capacity,
+            storageManger,
+            products
+        });
 
-try{
+        try{
 
-    const newStorag = await storage.save();
-    res.send(201);
-    next();
-} catch (err){
-    return next(new errors.InternalError(err.message));
-}
+            const newStorag = await storage.save();
+            res.send(201);
+            next();
+        } catch (err){
+            return next(new errors(500, err.message));
+        }
     });
 
     //update storage
     server.put('/storage/:id',rjwt({secret: config.JWT_SECRET}), async (req ,res ,next) => {
         //check for JSON 
         if(!req.is('application/json')) {
-            return next( new errors.InvalidContentError("Expect 'application/json'"));
+            return next( new errors(400, "Expect 'application/json'"));
         }
 try{
 
@@ -71,7 +68,7 @@ try{
     res.send(200);
     next();
 } catch (err){
-    return next(new errors.ResourceNotFoundError(
+    return next(new errors(404, 
         `There is no Storage with the id of ${req.params.id}`
     )
         );
@@ -79,13 +76,13 @@ try{
     });
 
     //delete storage
-    server.del('/storage/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, next) => {
+    server.delete('/storage/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, next) => {
         try{
             const storage = await Store.storage.findOneAndRemove({_id: req.params.id});
             res.send(204);
             next();
         }catch(err){
-            return next(new errors.ResourceNotFoundError(
+            return next(new errors(404, 
                 `There is no storage with the id of ${req.params.id}`
              )
                 );

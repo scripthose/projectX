@@ -1,4 +1,4 @@
-const errors = require('restify-errors');
+const errors = require('http-errors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Store = require('../models/model');
@@ -27,7 +27,7 @@ server.post('/register', (req, res, next) => {
                 res.send(201);
                 next();
             }catch (err){
-                return  next(new errors.InternalError(err.message));
+                return  next(new errors(500, err.message));
             }
         });
     });
@@ -46,13 +46,13 @@ server.post('/register', (req, res, next) => {
 
             const {iat, exp} = jwt.decode(token);
             //respond with token
-            res.send({iat, exp, token});
+            res.json({iat, exp, token});
 
             next();
 
          } catch (err){
             //Employee unauthorized
-            return next(new errors.UnauthorizedError(err));
+            return next(new errors(401, err));
          }
     });
 };
