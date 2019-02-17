@@ -10,7 +10,7 @@ module.exports = server => {
     server.get('/exporter', async (req ,res, ) =>{
         try{
             const exporters = await Store.exporter.find({});
-            res.send(exporters);
+            res.json(exporters);
         }
         catch (err) {
             return (new errors(400, err))
@@ -21,7 +21,7 @@ module.exports = server => {
     server.get('/exporter/:id', async (req ,res, ) =>{
         try{
             const exporter = await Store.exporter.findById(req.params.id);
-            res.send(exporter);
+            res.json(exporter);
         }
         catch (err) {
             return (new errors(404,`There is no product with the id of ${req.param.id}`));
@@ -32,7 +32,7 @@ module.exports = server => {
     server.post('/exporter', rjwt({secret: config.JWT_SECRET}), async (req ,res ,) => {
         //check for JSON 
         if(!req.is('application/json')) {
-            return ( new errors(400, "Expect 'application/json'"));
+            return (new errors(400, "Expect 'application/json'"));
         }
 
         const {name, tel, products} = req.body;
@@ -43,9 +43,8 @@ module.exports = server => {
         });
 
         try{
-
             const newExporter = await exporter.save();
-            res.send(201);
+            res.sendStatus(201);
         } catch (err){
             return (new errors(500, err.message));
         }
@@ -61,7 +60,7 @@ module.exports = server => {
         try{
             const exporter = await Store.exporter.findOneAndUpdate({ _id: req.params.id}, 
                 req.body);
-            res.send(200);
+            res.sendStatus(200);
         } catch (err){
             return (new errors(404, `There is no exporter with the id of ${req.params.id}`));
         }
@@ -71,7 +70,7 @@ module.exports = server => {
     server.delete('/exporter/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, ) => {
         try{
             const exporter = await Store.exporter.findOneAndRemove({_id: req.params.id});
-            res.send(204);
+            res.sendStatus(204);
         }catch(err){
             return (new errors(404, `There is no exporter with the id of ${req.params.id}`));
         }

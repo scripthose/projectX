@@ -1,4 +1,4 @@
-const errors = require('restify-errors');
+const errors = require('http-errors');
 const rjwt = require('restify-jwt-community');
 const Store = require('../models/model');
 const config = require('../config');
@@ -10,8 +10,7 @@ module.exports = server => {
     server.get('/product', async (req ,res, next) =>{
         try{
             const products = await Store.product.find({});
-            res.send(products);
-            next();
+            res.json(products);
         } catch (err) {
             return next(new errors(400, err))
         }
@@ -21,13 +20,9 @@ module.exports = server => {
     server.get('/product/:id', async (req ,res, next) =>{
         try{
             const product = await Store.product.findById(req.params.id);
-            res.send(product);
-          next();
+            res.json(product);
         } catch (err) {
-            return next(new errors(404,
-                `There is no product with the id of ${req.param.id}`
-            )
-            );
+            return next(new errors(404, `There is no product with the id of ${req.param.id}`));
         }
     });
 
@@ -51,8 +46,7 @@ module.exports = server => {
         try{
 
             const newProdcut = await product.save();
-            res.send(201);
-            next();
+            res.sendStatus(201);
         } catch (err){
             return next(new errors(500, err.message));
         }
@@ -68,13 +62,9 @@ module.exports = server => {
 
             const product = await Store.product.findOneAndUpdate({ _id: req.params.id}, 
                 req.body);
-            res.send(200);
-            next();
+            res.sendStatus(200);
         } catch (err){
-            return next(new errors(404, 
-                `There is no Product with the id of ${req.params.id}`
-            )
-                );
+            return next(new errors(404, `There is no Product with the id of ${req.params.id}`));
         }
     });
 
@@ -82,13 +72,9 @@ module.exports = server => {
     server.delete('/product/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, next) => {
         try{
             const customer = await Store.product.findOneAndRemove({_id: req.params.id});
-            res.send(204);
-            next();
+            res.sendStatus(204);
         }catch(err){
-            return next(new errors(404, 
-                `There is no customer with the id of ${req.params.id}`
-             )
-                );
+            return next(new errors(404, `There is no customer with the id of ${req.params.id}`));
         }
     });
 };

@@ -10,8 +10,7 @@ module.exports = server => {
     server.get('/storage', async (req ,res, next) =>{
         try{
             const storages = await Store.storage.find({});
-            res.send(storages);
-        next();
+            res.json(storages);
         }
         catch (err) {
             return next(new errors(400, err))
@@ -22,8 +21,7 @@ module.exports = server => {
     server.get('/storage/:id', async (req ,res, next) =>{
         try{
             const storage = await Store.storage.findById(req.params.id);
-            res.send(storage);
-        next();
+            res.json(storage);
         }
         catch (err) {
             return next(new errors(404,`There is no storage with the id of ${req.param.id}`));
@@ -48,8 +46,7 @@ module.exports = server => {
         try{
 
             const newStorag = await storage.save();
-            res.send(201);
-            next();
+            res.sendStatus(201);
         } catch (err){
             return next(new errors(500, err.message));
         }
@@ -61,31 +58,23 @@ module.exports = server => {
         if(!req.is('application/json')) {
             return next( new errors(400, "Expect 'application/json'"));
         }
-try{
+        try{
 
-    const storage = await Store.storage.findOneAndUpdate({ _id: req.params.id}, 
-        req.body);
-    res.send(200);
-    next();
-} catch (err){
-    return next(new errors(404, 
-        `There is no Storage with the id of ${req.params.id}`
-    )
-        );
-}
+            const storage = await Store.storage.findOneAndUpdate({ _id: req.params.id}, 
+                req.body);
+            res.sendStatus(200);
+        } catch (err){
+            return next(new errors(404, `There is no Storage with the id of ${req.params.id}`));
+        }
     });
 
     //delete storage
     server.delete('/storage/:id',rjwt({secret: config.JWT_SECRET}), async (req, res, next) => {
         try{
             const storage = await Store.storage.findOneAndRemove({_id: req.params.id});
-            res.send(204);
-            next();
+            res.sendStatus(204);
         }catch(err){
-            return next(new errors(404, 
-                `There is no storage with the id of ${req.params.id}`
-             )
-                );
+            return next(new errors(404, `There is no storage with the id of ${req.params.id}`));
         }
     });
 };
